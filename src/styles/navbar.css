@@ -1,0 +1,21 @@
+.logo-image {
+   width: 100px;
+   height: auto;
+}
+
+.navbar {
+    width: 100%;
+    padding: 15px;
+    margin-right: 300px;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-item {
+    text-align: center;
+}
+
+

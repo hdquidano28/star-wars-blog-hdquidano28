@@ -1,45 +1,61 @@
 const getState = ({ getStore, getActions, setStore }) => {
-	return {
-		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
-		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+  return {
+    store: {
+      people: [],
+      vehicules: [],
+      planets: [],
+      favorites: [],
+    },
+    actions: {
+      getPeople: async () => {
+        const store = getStore();
+        const setError = (errorMessage) => setStore({ error: errorMessage });
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+        try {
+          const responses = await Promise.all(
+            Array.from({ length: 10 }, (_, i) =>
+              fetch(`https://www.swapi.tech/api/people/${i + 1}`)
+            )
+          );
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
-	};
+          const results = await Promise.all(
+            responses.map((response) => {
+              if (response.status === 200) {
+                return response.json().then((data) => ({
+                  ...data.result.properties,
+                  uid: data.result.uid,
+                  description: data.result.description,
+                }));
+              } else {
+                return null; // Manejar errores como quieras
+              }
+            })
+          );
+
+          // Filtrar los resultados nulos
+          const people = results.filter((person) => person !== null);
+          console.log(people);
+          setStore({ people });
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setError("Error al conectar con la API.");
+        }
+      },
+
+      addFavorite: (person) => {
+        const store = getStore();
+        if (person && person.uid && !store.favorites.find((fav) => fav.uid === person.uid)) {
+          setStore({ favorites: [...store.favorites, person] });
+        }
+      },
+
+      removeFavorite: async (id) => {
+        const store = getStore();
+        const updateFavorites = store.favorites.filter((fav) => fav.uid !== id);
+        setStore({ favorites: updateFavorites });
+      },
+    },
+  };
 };
 
 export default getState;

@@ -1,0 +1,10 @@
+
+.card {
+    margin-right: 10px;
+    flex: 0 0 auto;
+    
+}
+
+.character-color {
+    color: red;
+}
