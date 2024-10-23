@@ -3,26 +3,23 @@ import { Link, useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 import "../../styles/styles.css";
 
-export const CharactersDetails = () => {
+export const PlanetsDetails = () => {
   const { store, actions } = useContext(Context);
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
 
-  const character = store.people.find((char) => char.uid === id);
+  const planet = store.planets.find((pla) => pla.uid === id);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [])
 
   if (loading) {
     return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: "100vh" }}
-      >
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
         <div className="spinner-grow" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
@@ -31,9 +28,12 @@ export const CharactersDetails = () => {
     );
   }
 
-  if (!character) {
-    return <div>Character not found!</div>;
+  if (!planet) {
+    return <div>Planet not found!</div>;
   }
+
+  const planetImage = `https://starwars-visualguide.com/assets/img/planets/${planet.uid}.jpg`
+  const defaultImage = "../..//img/star_wars_1.png";
 
   return (
     <div>
@@ -42,14 +42,18 @@ export const CharactersDetails = () => {
           <div className="row g-0">
             <div className="col-md-4">
               <img
-                src={`https://starwars-visualguide.com/assets/img/characters/${character.uid}.jpg`}
-                alt={character.name}
+                src={planetImage}
+                alt={planet.name}
                 className="img-fluid rounded-start"
+                onError={(e) => {
+                  e.target.onerror = null; 
+                  e.target.src = defaultImage;
+                }}
               />
             </div>
             <div className="col-md-8">
               <div className="card-body">
-                <h1 className="card-title">{character.name}</h1>
+                <h1 className="card-title">{planet.name}</h1>
                 <p className="card-text">
                   This is a wider card with supporting text below as a natural
                   lead-in to additional content. This content is a little bit
@@ -71,28 +75,27 @@ export const CharactersDetails = () => {
           <div className="row row-cols-auto">
             <div className="col-12 col-md-2">
               <div>Name</div>
-              <span>{character.name}</span>
+              <span>{planet.name}</span>
             </div>
             <div className="col-12 col-md-2">
-              <div>Birth year</div>
-              <span>{character.birth_year}</span>
+              <div>Diameter</div>
+              <span>{planet.diameter}</span>
             </div>
             <div className="col-12 col-md-2">
-              <div>Gender</div>
-              <span>{character.gender}</span>
-            </div>
-
-            <div className="col-12 col-md-2">
-              <div>Height</div>
-              <span>{character.height}</span>
+              <div>Population</div>
+              <span>{planet.population}</span>
             </div>
             <div className="col-12 col-md-2">
-              <div>Skin Color</div>
-              <span>{character.skin_color}</span>
+              <div>Terrain</div>
+              <span>{planet.terrain}</span>
             </div>
             <div className="col-12 col-md-2">
-              <div>Eye Color</div>
-              <span>{character.eye_color}</span>
+              <div>Gravity</div>
+              <span>{planet.gravity}</span>
+            </div>
+            <div className="col-12 col-md-2">
+              <div>Climate</div>
+              <span>{planet.climate}</span>
             </div>
           </div>
         </div>
@@ -100,4 +103,4 @@ export const CharactersDetails = () => {
     </div>
   );
 };
-export default CharactersDetails;
+export default PlanetsDetails;

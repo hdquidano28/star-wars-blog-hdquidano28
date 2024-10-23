@@ -7,11 +7,21 @@ import "../../styles/navbar.css";
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
 
-  const handleRemoveFavorite = (e, uid) => {
+  const handleRemoveFavorite = (e, uid, type) => {
     e.preventDefault();
     e.stopPropagation();
-    actions.removeFavorite(uid);
-  }
+    actions.removeFavorite(uid, type);
+  };
+
+  const handleAddFavorite = (item) => {
+    const result = actions.addFavorite(item);
+    if (result === false) {
+      setMessage("Favorite already exists");
+      setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+    } else {
+      setMessage(""); // Clear message if added successfully
+    }
+  };
 
   return (
     <nav className="navbar navbar-light bg-light mb-3">
@@ -34,8 +44,10 @@ export const Navbar = () => {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              Favorites 
-              <p className="btn-secondary ms-2 rounded-3 px-2 py-1 mb-0 ">{store.favorites.length}</p> 
+              Favorites
+              <p className="btn-secondary ms-2 rounded-3 px-2 py-1 mb-0 ">
+                {store.favorites.length}
+              </p>
             </button>
 
             <ul className="dropdown-menu">
@@ -45,12 +57,14 @@ export const Navbar = () => {
                 store.favorites.map((favorite) => (
                   <li
                     className="dropdown-item d-flex justify-content-between"
-                    key={favorite.uid}
+                    key={`${favorite.uid}-${favorite.type}`}
                   >
-                    {favorite.name}
+                    {favorite.name} ({favorite.type})
                     <button
                       className="btn"
-                      onClick={(e) => handleRemoveFavorite(e, favorite.uid)}
+                      onClick={(e) =>
+                        handleRemoveFavorite(e, favorite.uid, favorite.type)
+                      }
                     >
                       <i className="bi bi-trash-fill"></i>
                     </button>
